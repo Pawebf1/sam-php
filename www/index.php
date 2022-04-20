@@ -11,13 +11,32 @@
 <br>
 <?php
 
+function function_alert($message)
+{
+    echo "<script>alert('$message');</script>";
+}
+
 $dzis = date('Y-m-d');
+
 if (isset($_GET['liczbaLadunkow']))
     $liczbaLadunkow = $_GET['liczbaLadunkow'];
 else
     $liczbaLadunkow = 1;
 
+
+$x = 0;
+if (isset($_POST['ciezar_ladunku0']))
+    do {
+        if ($_POST["ciezar_ladunku$x"] > $_POST['inputGroupSelectSamolot']) {
+            function_alert("Za duży cieżar w paczce nr " . $x + 1);
+            break;
+        }
+        $x++;
+    } while ($x < $liczbaLadunkow)
+
+
 ?>
+
 <form action="" method="POST">
 
     <label class="input-group-text">Informacje ogólne ładunku</label>
@@ -41,9 +60,9 @@ else
         <div class="input-group-prepend">
             <label class="input-group-text">Typ samolotu</label>
         </div>
-        <select class="custom-select" id="inputGroupSelectSamolot">
-            <option value="Airbus A380">Airbus A380 (Maksymalna waga pojedynczego ładudunku 35 ton)</option>
-            <option value="Boeing 747">Boeing 747 (Maksymalna waga pojedynczego ładudunku 38 ton)</option>
+        <select class="custom-select" id="inputGroupSelectSamolot" name="inputGroupSelectSamolot" required>
+            <option value="35">Airbus A380 (Maksymalna waga pojedynczego ładudunku 35 ton)</option>
+            <option value="38">Boeing 747 (Maksymalna waga pojedynczego ładudunku 38 ton)</option>
         </select>
     </div>
 
@@ -105,10 +124,13 @@ else
     <div class="btn-group" role="group" aria-label="przyciski">
         <a href="?liczbaLadunkow=<?php echo $liczbaLadunkow + 1 ?>" class="btn btn-outline-primary">Dodaj kolejny
             ładunek</a>
-        <a href="?liczbaLadunkow=<?php echo $liczbaLadunkow - 1 ?>" class="btn btn-outline-primary">Usuń ostatni
-            ładunek</a>
+        <?php if ($liczbaLadunkow > 1)
+            echo '<a href="?liczbaLadunkow=' . $liczbaLadunkow - 1 . '" class="btn btn-outline-primary">Usuń ostatni ładunek</a>';
+        ?>
+
         <button type="submit" class="btn btn-outline-primary">Wyślij</button>
     </div>
 </form>
+
 </body>
 </html>
