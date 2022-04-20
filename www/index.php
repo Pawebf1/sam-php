@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -37,7 +38,7 @@ if (isset($_POST['ciezar_ladunku0']))
 
 ?>
 
-<form action="" method="POST">
+<form action="index.php" method="POST">
 
     <label class="input-group-text">Informacje ogólne ładunku</label>
     <div class="input-group mb-3">
@@ -60,8 +61,8 @@ if (isset($_POST['ciezar_ladunku0']))
         <div class="input-group-prepend">
             <label class="input-group-text">Typ samolotu</label>
         </div>
-        <select class="custom-select" id="inputGroupSelectSamolot" name="inputGroupSelectSamolot" required>
-            <option value="35">Airbus A380 (Maksymalna waga pojedynczego ładudunku 35 ton)</option>
+        <select class="custom-select" id="inputGroupSelectSamolot" name="inputGroupSelectSamolot">
+            <option selected value="35">Airbus A380 (Maksymalna waga pojedynczego ładudunku 35 ton)</option>
             <option value="38">Boeing 747 (Maksymalna waga pojedynczego ładudunku 38 ton)</option>
         </select>
     </div>
@@ -71,7 +72,7 @@ if (isset($_POST['ciezar_ladunku0']))
             <label class="input-group-text">Dokumenty przewozowe</label>
         </div>
         <input type="file" class="form-control" id="dokumentyPrzewozowe" name="dokumentyPrzewozowe"
-               accept=".pdf, .jpg, .png, .doc, .docx" multiple placeholder="Dodaj pliki">
+               accept=".pdf, .jpg, .png, .doc, .docx" multiple>
     </div>
 
     <div class="input-group mb-3">
