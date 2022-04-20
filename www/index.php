@@ -6,12 +6,17 @@
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'
           integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous'>
     <title>Sam php</title>
-
 </head>
 <body>
 <br>
 <?php
+
 $dzis = date('Y-m-d');
+if (isset($_GET['liczbaLadunkow']))
+    $liczbaLadunkow = $_GET['liczbaLadunkow'];
+else
+    $liczbaLadunkow = 1;
+
 ?>
 <form action="" method="POST">
 
@@ -59,36 +64,49 @@ $dzis = date('Y-m-d');
                min="<?php echo $dzis ?>">
     </div>
 
+
     <label class="input-group-text">Informacje poszczególnych ładunków</label>
 
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <label class="input-group-text">Nazwa ładunku</label>
-        </div>
-        <input type="text" class="form-control" id="nazwa_ladunku" name="nazwa_ladunku" required
-               placeholder="Wpisz nazwę">
-    </div>
+    <?php
+    $i = 0;
+    do {
+        echo("<label class='input-group-text'>Ładunek nr " . $i + 1 . "</label>");
+        echo('<div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Nazwa ładunku</label>
+                 </div>
+                <input type="text" class="form-control" id="nazwa_ladunku" name="nazwa_ladunku' . $i . '" required
+                    placeholder="Wpisz nazwę">
+               </div>');
 
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <label class="input-group-text">Ciężar ładunku w kg</label>
-        </div>
-        <input type="number" step="0.01" class="form-control" id="ciezar_ladunku" name="ciezar_ladunku" required
-               placeholder="Wpisz ciężar">
-    </div>
+        echo('<div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Ciężar ładunku w kg</label>
+                    </div>
+                    <input type="number" step="0.01" class="form-control" id="ciezar_ladunku" name="ciezar_ladunku' . $i . '" max="38"
+                        required placeholder="Wpisz ciężar">
+              </div>');
 
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <label class="input-group-text">Typ ładunku</label>
-        </div>
-        <select class="custom-select" id="inputGroupSelectTypLadunku">
-            <option value="ladunek_zwykly">Ładunek zwykły</option>
-            <option value="ladunek_niebezpieczny">Ładunek niebezbieczny</option>
-        </select>
-    </div>
+        echo('<div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Typ ładunku</label>
+                     </div>
+                    <select class="custom-select" id="inputGroupSelectTypLadunku' . $i . '">
+                        <option value="ladunek_zwykly">Ładunek zwykły</option>
+                        <option value="ladunek_niebezpieczny">Ładunek niebezbieczny</option>
+                    </select>
+              </div>');
+
+        $i++;
+    } while ($i < $liczbaLadunkow)
+
+    ?>
 
     <div class="btn-group" role="group" aria-label="przyciski">
-        <button type="button" class="btn btn-outline-primary">Dodaj kolejny ładunek</button>
+        <a href="?liczbaLadunkow=<?php echo $liczbaLadunkow + 1 ?>" class="btn btn-outline-primary">Dodaj kolejny
+            ładunek</a>
+        <a href="?liczbaLadunkow=<?php echo $liczbaLadunkow - 1 ?>" class="btn btn-outline-primary">Usuń ostatni
+            ładunek</a>
         <button type="submit" class="btn btn-outline-primary">Wyślij</button>
     </div>
 </form>
