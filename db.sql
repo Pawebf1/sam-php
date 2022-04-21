@@ -1,3 +1,6 @@
+CREATE DATABASE sam_php;
+USE sam_php;
+
 DROP TABLE IF EXISTS ladunek;
 DROP TABLE IF EXISTS transport;
 CREATE TABLE transport (
@@ -19,3 +22,4 @@ CREATE TABLE ladunek (
                          PRIMARY KEY(id),
                          FOREIGN KEY (transport_id) REFERENCES transport(id)
 )
+

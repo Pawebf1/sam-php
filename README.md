@@ -22,15 +22,13 @@ As of now, we have several different PHP versions. Use appropriate php version a
 
 * Clone this repository on your local computer
 * Run the `docker-compose up -d`.
-* Make sam_php db
-* Run sql code in sam_php db
+* Execute sql code from db.sql in phpMyAdmin
 
 ```shell
 git clone https://github.com/Pawebf1/sam-php.git
 cd sam-php/
 sudo docker-compose up -d
 // visit localhost:8080
-// make db sam_php
-// execute sql code db.sql in sam_php
+// execute sql code from db.sql
 // visit localhost
 ```
