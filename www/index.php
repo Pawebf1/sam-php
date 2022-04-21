@@ -48,7 +48,7 @@ function wyslij($liczbaLadunkow)
     $mail->isHTML(true);
     $mail->setFrom("transport@samoloty.com", "Pawel");
 
-    if ($_POST['inputGroupSelectSamolot'] == '35')
+    if ($_POST['inputGroupSelectSamolot'] == '35000')
         $do = "airbus@samoloty.com";
     else
         $do = "boeing@samoloty.com";
@@ -180,7 +180,7 @@ if (isset($_POST['ciezar_ladunku0'])) {
                     <div class="input-group-prepend">
                         <label class="input-group-text">Typ ładunku</label>
                      </div>
-                    <select class="custom-select" id="inputGroupSelectTypLadunku' . $i . ' " name = "typ_ladunku' . $i . '">
+                    <select class="custom-select" id="inputGroupSelectTypLadunku" name = "typ_ladunku' . $i . '">
                         <option value="ladunek zwykly">Ładunek zwykły</option>
                         <option value="ladunek niebezpieczny">Ładunek niebezbieczny</option>
                     </select>
