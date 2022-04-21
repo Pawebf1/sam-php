@@ -18,9 +18,14 @@ require_once "PHPMailer/PHPMailer.php";
 require_once "PHPMailer/SMTP.php";
 require_once "PHPMailer/Exception.php";
 
-function function_alert($message)
+function popupAlert($message)
 {
     echo "<script>alert('$message');</script>";
+}
+
+function czyWeekend($data)
+{
+    return (date('N', strtotime($data)) >= 6);
 }
 
 $dzis = date('Y-m-d');
@@ -72,28 +77,32 @@ function wyslij($liczbaLadunkow)
 
     for ($i = 0; $i < count($_FILES['dokumenty']['tmp_name']); $i++)
         $mail->addAttachment($_FILES['dokumenty']['tmp_name'][$i], $_FILES['dokumenty']['name'][$i]);
-    
+
     if ($mail->send()) {
-        function_alert("Pomyślnie wysłano zgłoszenie");
+        popupAlert("Pomyślnie wysłano zgłoszenie");
     } else {
-        function_alert("Błąd wysyłaniu zgłoszenia: " . $mail->ErrorInfo);
+        popupAlert("Błąd wysyłaniu zgłoszenia: " . $mail->ErrorInfo);
     }
 }
 
 $x = 0;
 if (isset($_POST['ciezar_ladunku0'])) {
     $formularzPoprawny = true;
-    do {
-        if ($_POST["ciezar_ladunku$x"] > $_POST['inputGroupSelectSamolot']) {
-            function_alert("Za duży cieżar w paczce nr " . $x + 1);
-            $formularzPoprawny = false;
-            break;
-        }
-        $x++;
-    } while ($x < $liczbaLadunkow);
 
-    if ($formularzPoprawny)
-        wyslij($liczbaLadunkow);
+    if (!czyWeekend($_POST['data_transportu'])) {
+        do {
+            if ($_POST["ciezar_ladunku$x"] > $_POST['inputGroupSelectSamolot']) {
+                popupAlert("Za duży cieżar w paczce nr " . $x + 1);
+                $formularzPoprawny = false;
+                break;
+            }
+            $x++;
+        } while ($x < $liczbaLadunkow);
+
+        if ($formularzPoprawny)
+            wyslij($liczbaLadunkow);
+    } else
+        popupAlert("Data transportu może odbywać się tylko w dni robocze");
 }
 
 ?>
