@@ -12,6 +12,12 @@
 <br>
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
+require_once "PHPMailer/PHPMailer.php";
+require_once "PHPMailer/SMTP.php";
+require_once "PHPMailer/Exception.php";
+
 function function_alert($message)
 {
     echo "<script>alert('$message');</script>";
@@ -24,21 +30,75 @@ if (isset($_GET['liczbaLadunkow']))
 else
     $liczbaLadunkow = 1;
 
+function wyslij($liczbaLadunkow)
+{
+    $mail = new PHPMailer();
+    $mail->isSMTP();
+    $mail->Host = 'smtp.mailtrap.io';
+    $mail->SMTPAuth = true;
+    $mail->Port = 2525;
+    $mail->Username = '2e4a42ba7e2ec8';
+    $mail->Password = 'e655ac4fcf13d3';
+
+    $mail->isHTML(true);
+    $mail->setFrom("transport@samoloty.com", "Pawel");
+
+    if ($_POST['inputGroupSelectSamolot'] == '35')
+        $do = "airbus@samoloty.com";
+    else
+        $do = "boeing@samoloty.com";
+
+    $mail->addAddress($do);
+    $mail->Subject = ("Transport");
+
+    $body = "<table> ";
+    $body .= " <tr> <th> Transport z </th> <th>" . $_POST['transport_z'] . "</th></tr>";
+    $body .= " <tr> <th> Transport do </th> <th>" . $_POST['transport_do'] . "</th></tr>";
+    $body .= " <tr> <th> Data transportu </th> <th>" . $_POST['data_transportu'] . "</th></tr>";
+    $body .= "</table>";
+
+    $x = 0;
+    $body .= "<table>";
+    do {
+        $body .= " <tr> <th> Ladunek nr </th> <th>" . $x + 1 . "</th></tr>";
+        $body .= " <tr> <th> Nazwa ladunku </th> <th>" . $_POST["nazwa_ladunku$x"] . "</th></tr>";
+        $body .= " <tr> <th> Ciezar ladunku </th> <th>" . $_POST["ciezar_ladunku$x"] . "</th></tr>";
+        $body .= " <tr> <th> Typ ladunku </th> <th>" . $_POST["typ_ladunku$x"] . "</th></tr>";
+        $x++;
+    } while ($x < $liczbaLadunkow);
+    $body .= "</table>";
+
+    $mail->Body = $body;
+
+
+    $mail->addAttachment($_POST['dokumenty_przewozowe'], 'dokumenty.pdf');
+    $mail->addStringAttachment($_POST['dokumenty_przewozowe'], 'dokumenty.pdf');
+    if ($mail->send()) {
+        function_alert("Pomyślnie wysłano zgłoszenie");
+    } else {
+        function_alert("Błąd wysyłaniu zgłoszenia: " . $mail->ErrorInfo);
+    }
+}
 
 $x = 0;
-if (isset($_POST['ciezar_ladunku0']))
+if (isset($_POST['ciezar_ladunku0'])) {
+    $formularzPoprawny = true;
     do {
         if ($_POST["ciezar_ladunku$x"] > $_POST['inputGroupSelectSamolot']) {
             function_alert("Za duży cieżar w paczce nr " . $x + 1);
+            $formularzPoprawny = false;
             break;
         }
         $x++;
-    } while ($x < $liczbaLadunkow)
+    } while ($x < $liczbaLadunkow);
 
+    if ($formularzPoprawny)
+        wyslij($liczbaLadunkow);
+}
 
 ?>
 
-<form action="index.php" method="POST">
+<form action="" method="POST">
 
     <label class="input-group-text">Informacje ogólne ładunku</label>
     <div class="input-group mb-3">
@@ -71,7 +131,7 @@ if (isset($_POST['ciezar_ladunku0']))
         <div class="input-group-prepend">
             <label class="input-group-text">Dokumenty przewozowe</label>
         </div>
-        <input type="file" class="form-control" id="dokumentyPrzewozowe" name="dokumentyPrzewozowe"
+        <input type="file" class="form-control" id="dokumenty_przewozowe" name="dokumenty_przewozowe"
                accept=".pdf, .jpg, .png, .doc, .docx" multiple>
     </div>
 
@@ -79,7 +139,7 @@ if (isset($_POST['ciezar_ladunku0']))
         <div class="input-group-prepend">
             <label class="input-group-text">Data transportu</label>
         </div>
-        <input type="date" id="dataTransportu" name="dataTransportu"
+        <input type="date" id="data_transportu" name="data_transportu"
                value="<?php echo $dzis ?>"
                min="<?php echo $dzis ?>">
     </div>
@@ -111,9 +171,9 @@ if (isset($_POST['ciezar_ladunku0']))
                     <div class="input-group-prepend">
                         <label class="input-group-text">Typ ładunku</label>
                      </div>
-                    <select class="custom-select" id="inputGroupSelectTypLadunku' . $i . '">
-                        <option value="ladunek_zwykly">Ładunek zwykły</option>
-                        <option value="ladunek_niebezpieczny">Ładunek niebezbieczny</option>
+                    <select class="custom-select" id="inputGroupSelectTypLadunku' . $i . ' " name = "typ_ladunku' . $i . '">
+                        <option value="ladunek zwykly">Ładunek zwykły</option>
+                        <option value="ladunek niebezpieczny">Ładunek niebezbieczny</option>
                     </select>
               </div>');
 
