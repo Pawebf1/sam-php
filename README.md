@@ -26,6 +26,6 @@ As of now, we have several different PHP versions. Use appropriate php version a
 ```shell
 git clone https://github.com/Pawebf1/sam-php.git
 cd sam-php/
-docker-compose up -d
+sudo docker-compose up -d
 // visit localhost
 ```
