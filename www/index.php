@@ -11,11 +11,12 @@
 <body>
 <br>
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-
-require_once 'vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 function popupAlert($message)
 {
@@ -38,11 +39,11 @@ function wyslij($liczbaLadunkow)
 {
     $mail = new PHPMailer();
     $mail->isSMTP();
-    $mail->Host = 'smtp.mailtrap.io';
+    $mail->Host = $_ENV['MAIL_HOST'];
     $mail->SMTPAuth = true;
-    $mail->Port = 2525;
-    $mail->Username = '2e4a42ba7e2ec8';
-    $mail->Password = 'e655ac4fcf13d3';
+    $mail->Port = $_ENV['MAIL_PORT'];
+    $mail->Username = $_ENV['MAIL_USERNAME'];
+    $mail->Password = $_ENV['MAIL_PASSWORD'];
 
     $mail->isHTML(true);
     $mail->setFrom("transport@samoloty.com", "Pawel");
@@ -130,8 +131,8 @@ if (isset($_POST['ciezar_ladunku0'])) {
             <label class="input-group-text">Typ samolotu</label>
         </div>
         <select class="custom-select" id="inputGroupSelectSamolot" name="inputGroupSelectSamolot">
-            <option selected value="35">Airbus A380 (Maksymalna waga pojedynczego ładudunku 35 ton)</option>
-            <option value="38">Boeing 747 (Maksymalna waga pojedynczego ładudunku 38 ton)</option>
+            <option selected value="35000">Airbus A380 (Maksymalna waga pojedynczego ładudunku 35 ton)</option>
+            <option value="38000">Boeing 747 (Maksymalna waga pojedynczego ładudunku 38 ton)</option>
         </select>
     </div>
 
@@ -171,7 +172,7 @@ if (isset($_POST['ciezar_ladunku0'])) {
                     <div class="input-group-prepend">
                         <label class="input-group-text">Ciężar ładunku w kg</label>
                     </div>
-                    <input type="number" step="0.01" class="form-control" id="ciezar_ladunku" name="ciezar_ladunku' . $i . '" max="38"
+                    <input type="number" step="0.01" class="form-control" id="ciezar_ladunku" name="ciezar_ladunku' . $i . '" max="38000"
                         required placeholder="Wpisz ciężar">
               </div>');
 
