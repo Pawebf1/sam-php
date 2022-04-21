@@ -70,9 +70,9 @@ function wyslij($liczbaLadunkow)
 
     $mail->Body = $body;
 
-
-    $mail->addAttachment($_POST['dokumenty_przewozowe'], 'dokumenty.pdf');
-    $mail->addStringAttachment($_POST['dokumenty_przewozowe'], 'dokumenty.pdf');
+    for ($i = 0; $i < count($_FILES['dokumenty']['tmp_name']); $i++)
+        $mail->addAttachment($_FILES['dokumenty']['tmp_name'][$i], $_FILES['dokumenty']['name'][$i]);
+    
     if ($mail->send()) {
         function_alert("Pomyślnie wysłano zgłoszenie");
     } else {
@@ -98,7 +98,7 @@ if (isset($_POST['ciezar_ladunku0'])) {
 
 ?>
 
-<form action="" method="POST">
+<form action="" method="POST" enctype="multipart/form-data">
 
     <label class="input-group-text">Informacje ogólne ładunku</label>
     <div class="input-group mb-3">
@@ -131,7 +131,7 @@ if (isset($_POST['ciezar_ladunku0'])) {
         <div class="input-group-prepend">
             <label class="input-group-text">Dokumenty przewozowe</label>
         </div>
-        <input type="file" class="form-control" id="dokumenty_przewozowe" name="dokumenty_przewozowe"
+        <input type="file" class="form-control" id="dokumenty" name="dokumenty[]"
                accept=".pdf, .jpg, .png, .doc, .docx" multiple>
     </div>
 
