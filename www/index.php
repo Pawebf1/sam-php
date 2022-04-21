@@ -35,6 +35,7 @@ if (isset($_GET['liczbaLadunkow']))
 else
     $liczbaLadunkow = 1;
 
+
 function wyslij($liczbaLadunkow)
 {
     $mail = new PHPMailer();
@@ -48,11 +49,13 @@ function wyslij($liczbaLadunkow)
     $mail->isHTML(true);
     $mail->setFrom("transport@samoloty.com", "Pawel");
 
-    if ($_POST['inputGroupSelectSamolot'] == '35000')
+    if ($_POST['inputGroupSelectSamolot'] == '35000') {
         $do = "airbus@samoloty.com";
-    else
+        $samolot = "Airbus A380";
+    } else {
         $do = "boeing@samoloty.com";
-
+        $samolot = "Boeing 747";
+    }
     $mail->addAddress($do);
     $mail->Subject = ("Transport");
 
@@ -82,6 +85,35 @@ function wyslij($liczbaLadunkow)
         popupAlert("Pomyślnie wysłano zgłoszenie");
     } else {
         popupAlert("Błąd wysyłaniu zgłoszenia: " . $mail->ErrorInfo);
+    }
+
+
+    try {
+        $conn = mysqli_connect($_ENV['MYSQL_DB'], "root", $_ENV['MYSQL_ROOT_PASSWORD'], $_ENV['MYSQL_DB_NAME']);
+
+        for ($i = 0; $i < count($_FILES['dokumenty']['tmp_name']); $i++)
+            $dokumenty = $_FILES['dokumenty']['name'][$i];
+
+        $query = 'INSERT INTO transport (transport_z, transport_do, typ_samolotu, data_transportu, dokumenty) values ("'
+            . $_POST["transport_z"] . '","' . $_POST["transport_do"] . '"," ' . $samolot . '"," ' . $_POST["data_transportu"] . '","' . $dokumenty . '")';
+        if (!$conn->query($query))
+            printf("Błąd: %s<br>\n", $conn->error);
+
+
+        $last_id = $conn->insert_id;
+        $x = 0;
+        do {
+            $query = 'INSERT INTO ladunek (transport_id, nazwa, ciezar_ladunku, typ_ladunku) values ("'
+                . $last_id . '","' . $_POST["nazwa_ladunku$x"] . '"," ' . $_POST["ciezar_ladunku$x"] . '"," ' . $_POST["typ_ladunku$x"] . '")';
+            if (!$conn->query($query))
+                printf("Błąd: %s<br>\n", $conn->error);
+            $x++;
+        } while ($x < $liczbaLadunkow);
+
+
+        $conn->close();
+    } catch (Exception $e) {
+        echo $e->getMessage();
     }
 }
 
