@@ -38,6 +38,25 @@ else
 
 function wyslij($liczbaLadunkow)
 {
+    if ($_POST['inputGroupSelectSamolot'] == '35000') {
+        $do = "airbus@samoloty.com";
+        $samolot = "Airbus A380";
+    } else {
+        $do = "boeing@samoloty.com";
+        $samolot = "Boeing 747";
+    }
+
+    try {
+        wyslijEmail($liczbaLadunkow, $do);
+        zapiszDB($liczbaLadunkow, $samolot);
+        popupAlert("Pomyślnie wysłano zgłoszenie");
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+}
+
+function wyslijEmail($liczbaLadunkow, $do)
+{
     try {
         $mail = new PHPMailer();
         $mail->isSMTP();
@@ -49,14 +68,6 @@ function wyslij($liczbaLadunkow)
 
         $mail->isHTML(true);
         $mail->setFrom("transport@samoloty.com", "Pawel");
-
-        if ($_POST['inputGroupSelectSamolot'] == '35000') {
-            $do = "airbus@samoloty.com";
-            $samolot = "Airbus A380";
-        } else {
-            $do = "boeing@samoloty.com";
-            $samolot = "Boeing 747";
-        }
         $mail->addAddress($do);
         $mail->Subject = ("Transport");
 
@@ -64,34 +75,14 @@ function wyslij($liczbaLadunkow)
         $body .= " <tr> <th> Transport z </th> <th>" . $_POST['transport_z'] . "</th></tr>";
         $body .= " <tr> <th> Transport do </th> <th>" . $_POST['transport_do'] . "</th></tr>";
         $body .= " <tr> <th> Data transportu </th> <th>" . $_POST['data_transportu'] . "</th></tr>";
-        $body .= "</table>";
 
-
-        $conn = mysqli_connect($_ENV['MYSQL_DB'], "root", $_ENV['MYSQL_ROOT_PASSWORD'], $_ENV['MYSQL_DB_NAME']);
-
-        for ($i = 0; $i < count($_FILES['dokumenty']['tmp_name']); $i++)
-            $dokumenty = $_FILES['dokumenty']['name'][$i];
-
-        $query = 'INSERT INTO transport (transport_z, transport_do, typ_samolotu, data_transportu, dokumenty) values ("'
-            . $_POST["transport_z"] . '","' . $_POST["transport_do"] . '"," ' . $samolot . '"," ' . $_POST["data_transportu"] . '","' . $dokumenty . '")';
-        if (!$conn->query($query))
-            printf("Błąd: %s<br>\n", $conn->error);
-
-
-        $last_id = $conn->insert_id;
 
         $x = 0;
-        $body .= "<table>";
         do {
             $body .= " <tr> <th> Ladunek nr </th> <th>" . $x + 1 . "</th></tr>";
             $body .= " <tr> <th> Nazwa ladunku </th> <th>" . $_POST["nazwa_ladunku$x"] . "</th></tr>";
             $body .= " <tr> <th> Ciezar ladunku </th> <th>" . $_POST["ciezar_ladunku$x"] . "</th></tr>";
             $body .= " <tr> <th> Typ ladunku </th> <th>" . $_POST["typ_ladunku$x"] . "</th></tr>";
-
-            $query = 'INSERT INTO ladunek (transport_id, nazwa, ciezar_ladunku, typ_ladunku) values ("'
-                . $last_id . '","' . $_POST["nazwa_ladunku$x"] . '"," ' . $_POST["ciezar_ladunku$x"] . '"," ' . $_POST["typ_ladunku$x"] . '")';
-            if (!$conn->query($query))
-                printf("Błąd: %s<br>\n", $conn->error);
             $x++;
         } while ($x < $liczbaLadunkow);
         $body .= "</table>";
@@ -101,18 +92,44 @@ function wyslij($liczbaLadunkow)
         for ($i = 0; $i < count($_FILES['dokumenty']['tmp_name']); $i++)
             $mail->addAttachment($_FILES['dokumenty']['tmp_name'][$i], $_FILES['dokumenty']['name'][$i]);
 
-        if ($mail->send()) {
-            popupAlert("Pomyślnie wysłano zgłoszenie");
-        } else {
-            popupAlert("Błąd wysyłaniu zgłoszenia: " . $mail->ErrorInfo);
-        }
+        $mail->send();
+
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+
+}
 
 
+function zapiszDB($liczbaLadunkow, $samolot)
+{
+
+    try {
+        $conn = mysqli_connect($_ENV['MYSQL_DB'], "root", $_ENV['MYSQL_ROOT_PASSWORD'], $_ENV['MYSQL_DB_NAME']);
+        $dokumenty = "";
+        for ($i = 0; $i < count($_FILES['dokumenty']['tmp_name']); $i++)
+            $dokumenty .= $_FILES['dokumenty']['name'][$i] . " ";
+
+        $query = 'INSERT INTO transport (transport_z, transport_do, typ_samolotu, data_transportu, dokumenty) values ("'
+            . $_POST["transport_z"] . '","' . $_POST["transport_do"] . '"," ' . $samolot . '"," ' . $_POST["data_transportu"] . '","' . $dokumenty . '")';
+        if (!$conn->query($query))
+            printf("Błąd: %s<br>\n", $conn->error);
+
+        $last_id = $conn->insert_id;
+        $x = 0;
+        do {
+            $query = 'INSERT INTO ladunek (transport_id, nazwa, ciezar_ladunku, typ_ladunku) values ("'
+                . $last_id . '","' . $_POST["nazwa_ladunku$x"] . '"," ' . $_POST["ciezar_ladunku$x"] . '"," ' . $_POST["typ_ladunku$x"] . '")';
+            if (!$conn->query($query))
+                printf("Błąd: %s<br>\n", $conn->error);
+            $x++;
+        } while ($x < $liczbaLadunkow);
         $conn->close();
     } catch (Exception $e) {
         echo $e->getMessage();
     }
 }
+
 
 $x = 0;
 if (isset($_POST['ciezar_ladunku0'])) {
