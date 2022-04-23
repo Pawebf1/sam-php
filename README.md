@@ -22,3 +22,17 @@ sudo docker-compose up -d
 // execute sql code from db.sql
 // visit localhost
 ```
+
+## Screenshots
+
+![](screenshots/glowna_strona.png)
+![](screenshots/pomyslne_wyslanie.png)
+![](screenshots/wyslany_mail.png)
+![](screenshots/baza_danych_glowna.png)
+![](screenshots/baza_danych_transport.png)
+![](screenshots/baza_danych_ladunek.png)
+
+## Possible errors
+
+![](screenshots/blad_wyslania1.png)
+![](screenshots/blad_wyslania2.png)
