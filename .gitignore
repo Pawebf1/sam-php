@@ -1,4 +1,7 @@
-/.idea
-/data/*
-/logs/*
+/.env
 
+# mysql
+/storage/mysql
+
+# composer
+/src/vendor/
