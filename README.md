@@ -1,18 +1,18 @@
-# LAMP stack built with Docker Compose
+# Recruitment task in php
 
-A basic LAMP stack environment built using Docker Compose. It consists of the following:
+It consists of the following:
 
 * PHP
-* Apache
+* Nginx
 * MySQL
 * phpMyAdmin
-* Redis
 
 ## Installation
 
 * Clone this repository on your local computer
 * Configure .env as needed
 * Run the `docker-compose up -d`.
+* Install required packages
 
 
 ```shell
@@ -20,6 +20,9 @@ git clone https://github.com/Pawebf1/sam-php.git
 cd sam-php/
 cp sample.env .env
 sudo docker-compose up -d
+sudo docker exec -it sam-php_app_1 bash
+composer install
+exit
 // visit localhost
 ```
 
