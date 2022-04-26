@@ -12,7 +12,7 @@ It consists of the following:
 * Clone this repository on your local computer
 * Configure .env as needed
 * Run the `docker-compose up -d`.
-* Install required packages
+* Install required packages inside docker container
 
 
 ```shell
@@ -21,8 +21,10 @@ cd sam-php/
 cp sample.env .env
 sudo docker-compose up -d
 sudo docker exec -it sam-php_app_1 bash
+```
+
+```shell
 composer install
-exit
 // visit localhost
 ```
 
