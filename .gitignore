@@ -5,3 +5,8 @@
 
 # composer
 /src/vendor/
+
+# PhpStorm / IDEA
+.idea
+# NetBeans
+nbproject
