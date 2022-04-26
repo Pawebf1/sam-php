@@ -24,39 +24,39 @@ function popupAlert($message)
     echo "<script>alert('$message');</script>";
 }
 
-function czyWeekend($data)
+function isWeekend($data)
 {
     return (date('N', strtotime($data)) >= 6);
 }
 
-$dzis = date('Y-m-d');
+$today = date('Y-m-d');
 
 if (isset($_GET['liczbaLadunkow']))
-    $liczbaLadunkow = $_GET['liczbaLadunkow'];
+    $packageNumber = $_GET['liczbaLadunkow'];
 else
-    $liczbaLadunkow = 1;
+    $packageNumber = 1;
 
 
-function wyslij($liczbaLadunkow)
+function send($liczbaLadunkow)
 {
     if ($_POST['inputGroupSelectSamolot'] == '35000') {
-        $do = "airbus@samoloty.com";
-        $samolot = "Airbus A380";
+        $to = "airbus@samoloty.com";
+        $airplane = "Airbus A380";
     } else {
-        $do = "boeing@samoloty.com";
-        $samolot = "Boeing 747";
+        $to = "boeing@samoloty.com";
+        $airplane = "Boeing 747";
     }
 
     try {
-        wyslijEmail($liczbaLadunkow, $do);
-        zapiszDB($liczbaLadunkow, $samolot);
+        sendEmail($liczbaLadunkow, $to);
+        saveDB($liczbaLadunkow, $airplane);
         popupAlert("Pomyślnie wysłano zgłoszenie");
     } catch (Exception $e) {
         echo $e->getMessage();
     }
 }
 
-function wyslijEmail($liczbaLadunkow, $do)
+function sendEmail($packageNumber, $to)
 {
     try {
         $mail = new PHPMailer();
@@ -69,7 +69,7 @@ function wyslijEmail($liczbaLadunkow, $do)
 
         $mail->isHTML(true);
         $mail->setFrom("transport@samoloty.com", "Pawel");
-        $mail->addAddress($do);
+        $mail->addAddress($to);
         $mail->Subject = ("Transport");
 
         $body = "<table> ";
@@ -85,7 +85,7 @@ function wyslijEmail($liczbaLadunkow, $do)
             $body .= " <tr> <th> Ciezar ladunku </th> <th>" . $_POST["ciezar_ladunku$x"] . "</th></tr>";
             $body .= " <tr> <th> Typ ladunku </th> <th>" . $_POST["typ_ladunku$x"] . "</th></tr>";
             $x++;
-        } while ($x < $liczbaLadunkow);
+        } while ($x < $packageNumber);
         $body .= "</table>";
 
         $mail->Body = $body;
@@ -102,7 +102,7 @@ function wyslijEmail($liczbaLadunkow, $do)
 }
 
 
-function zapiszDB($liczbaLadunkow, $samolot)
+function saveDB($packageNumber, $airplane)
 {
 
     try {
@@ -112,7 +112,7 @@ function zapiszDB($liczbaLadunkow, $samolot)
             $dokumenty .= $_FILES['dokumenty']['name'][$i] . " ";
 
         $query = 'INSERT INTO transport (transport_z, transport_do, typ_samolotu, data_transportu, dokumenty) values ("'
-            . $_POST["transport_z"] . '","' . $_POST["transport_do"] . '"," ' . $samolot . '"," ' . $_POST["data_transportu"] . '","' . $dokumenty . '")';
+            . $_POST["transport_z"] . '","' . $_POST["transport_do"] . '"," ' . $airplane . '"," ' . $_POST["data_transportu"] . '","' . $dokumenty . '")';
         if (!$conn->query($query))
             printf("Błąd: %s<br>\n", $conn->error);
 
@@ -124,7 +124,7 @@ function zapiszDB($liczbaLadunkow, $samolot)
             if (!$conn->query($query))
                 printf("Błąd: %s<br>\n", $conn->error);
             $x++;
-        } while ($x < $liczbaLadunkow);
+        } while ($x < $packageNumber);
         $conn->close();
     } catch (Exception $e) {
         echo $e->getMessage();
@@ -134,20 +134,20 @@ function zapiszDB($liczbaLadunkow, $samolot)
 
 $x = 0;
 if (isset($_POST['ciezar_ladunku0'])) {
-    $formularzPoprawny = true;
+    $formValid = true;
 
-    if (!czyWeekend($_POST['data_transportu'])) {
+    if (!isWeekend($_POST['data_transportu'])) {
         do {
             if ($_POST["ciezar_ladunku$x"] > $_POST['inputGroupSelectSamolot']) {
                 popupAlert("Za duży cieżar w paczce nr " . $x + 1);
-                $formularzPoprawny = false;
+                $formValid = false;
                 break;
             }
             $x++;
-        } while ($x < $liczbaLadunkow);
+        } while ($x < $packageNumber);
 
-        if ($formularzPoprawny)
-            wyslij($liczbaLadunkow);
+        if ($formValid)
+            send($packageNumber);
     } else
         popupAlert("Data transportu może odbywać się tylko w dni robocze");
 }
@@ -196,8 +196,8 @@ if (isset($_POST['ciezar_ladunku0'])) {
             <label class="input-group-text">Data transportu</label>
         </div>
         <input type="date" id="data_transportu" name="data_transportu"
-               value="<?php echo $dzis ?>"
-               min="<?php echo $dzis ?>">
+               value="<?php echo $today ?>"
+               min="<?php echo $today ?>">
     </div>
 
 
@@ -234,15 +234,15 @@ if (isset($_POST['ciezar_ladunku0'])) {
               </div>');
 
         $i++;
-    } while ($i < $liczbaLadunkow)
+    } while ($i < $packageNumber)
 
     ?>
 
     <div class="btn-group" role="group" aria-label="przyciski">
-        <a href="?liczbaLadunkow=<?php echo $liczbaLadunkow + 1 ?>" class="btn btn-outline-primary">Dodaj kolejny
+        <a href="?liczbaLadunkow=<?php echo $packageNumber + 1 ?>" class="btn btn-outline-primary">Dodaj kolejny
             ładunek</a>
-        <?php if ($liczbaLadunkow > 1)
-            echo '<a href="?liczbaLadunkow=' . $liczbaLadunkow - 1 . '" class="btn btn-outline-primary">Usuń ostatni ładunek</a>';
+        <?php if ($packageNumber > 1)
+            echo '<a href="?liczbaLadunkow=' . $packageNumber - 1 . '" class="btn btn-outline-primary">Usuń ostatni ładunek</a>';
         ?>
 
         <button type="submit" class="btn btn-outline-primary">Wyślij</button>
